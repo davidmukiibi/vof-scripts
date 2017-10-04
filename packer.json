@@ -1,23 +1,37 @@
-{:
-  "provisioners": [{
-    "type": "shell",
-    "scripts": [ "setup.sh" ],
-  }],
-  "builders": [{
+{
+  "variables": {
+      "service_account_json": "/Users/davidmukiibi/PROJECTS/vof-scripts/account.json"
+  },
+  "builders": [ 
+    {
+      "type": "googlecompute",
+      "disk_size": 10,
+      "image_name": "vof-image-ruby-{{timestamp}}",
+      "image_description": "vof image for a rails application with the github repo code included",
+      "project_id": "vof-testbed-2",
+      "source_image": "ubuntu-1604-xenial-v20170815a",
+      "region": "europe-west1",
+      "zone": "europe-west1-b",
+      "image_family": "ubuntu-1604-lts",
+      "ssh_username": "vof",
+      "account_file": "{{user `service_account_json`}}",
+      "machine_type": "n1-standard-1"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "setup.sh"
+    },
+      {
+        "type": "shell",
+        "inline": [
+              "sudo apt-get install -y git sudo",
+              "ssh-keyscan github.com >> ~/.ssh/known_hosts",
+              "cd /home/vof && git clone git@github.com:andela/vof-tracker.git",
+              "cd /home/vof/vof-tracker && bundle install"
+        ]
+    }
     
-  }],
-  "post-processors": ["vagrant"]
-
-  "type": "virtualbox-iso",
-  "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.5-server-amd64.iso",
-  "iso_checksum": "769474248a3897f4865817446f9a4a53",
-  "iso_checksum_type": "md5",
-  "disk_size": 10,
-  "guest_os_type": "Ubuntu_64",
-  "iso_target_path": "/davidmukiibi/",
-  "keep_registered": "false",
-  "vm_name": "vof-vagrant-image",
-  "ssh_username": "packer",
-  "ssh_password": "packer",
-  "shutdown_command": "echo 'packer' | sudo -S shutdown -P now"
+  ]
 }

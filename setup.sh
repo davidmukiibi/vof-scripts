@@ -12,12 +12,12 @@ create_vof_user() {
 }
 
 install_system_dependencies() {
-  apt-get update -y
+  sudo apt-get update -y
 
-  apt-get install -y --no-install-recommends git-core curl zlib1g-dev     \
+  sudo apt-get install -y --no-install-recommends git-core curl zlib1g-dev \
     build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev \
     sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev wget nodejs     \
-    python-software-properties libffi-dev postgresql postgresql-contrib   \
+    python-software-properties libffi-dev sudo postgresql postgresql-contrib   \
     libpq-dev
 }
 
@@ -25,8 +25,8 @@ install_ruby(){
   if ! which ruby; then
     install_system_dependencies
 
-    chgrp -R vof  /usr/local
-    chmod -R g+rw /usr/local
+    sudo chgrp -R vof  /usr/local
+    sudo chmod -R g+rw /usr/local
 
     curl -k -O -L "https://cache.ruby-lang.org/pub/ruby/${RUBY_VERSION%\.*}/ruby-${RUBY_VERSION}.tar.gz"
     tar zxf ruby-*
@@ -55,10 +55,14 @@ setup_vof_code() {
   rm -rf /home/vof/app
   mkdir -p /home/vof/app
 
-  cp -a /tmp/vof/. /home/vof/app/
-  chown -R vof:vof /home/vof
+  # ssh-agent $(ssh-add ../~/.ssh/id_rsa; git clone git@github.com:andela/vof-tracker.git)
+  # cp -a $(pwd)/../vof-tracker /tmp/vof
+  # ln -s /Users/davidmukiibi/PROJECTS/vof-tracker /home/vof/app
+  # 'cd /home/vof/app' "ls /home/vof/app"
+  # cp -a /tmp/vof /home/vof/app/
+  sudo chown -R vof:vof /home/vof/app
   
-  su - vof -c 'cd /home/vof/app && bundle install'
+  # sudo su - vof -c 'cd /home/vof/app && bundle install'
 }
 
 main() {
